@@ -1,3 +1,3 @@
-# AlgoBharat_BYOP_CredChain
+# AlgoBharat Hack-Series in the "Bring Your Own Project" track!
 
-## This repo will contains all the codes, reports and documation our project.
+## This repository contains all the code, reports, and documentation for our project.
