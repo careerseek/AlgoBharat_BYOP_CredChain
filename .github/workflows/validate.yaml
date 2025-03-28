@@ -1,0 +1,14 @@
+name: Pull Request validation
+
+on: [pull_request]
+
+
+jobs:
+  CredChain-contracts-ci:
+    name: Run CredChain-contracts validation
+    uses: ./.github/workflows/CredChain-contracts-ci.yaml
+
+  CredChain-frontend-ci:
+    name: Run CredChain-frontend validation
+    uses: ./.github/workflows/CredChain-frontend-ci.yaml
+

@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.vscode/**'
+      - '.idea/**'
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  CredChain-contracts-validate:
+    name: Run CredChain-contracts release
+    secrets: inherit
+    uses: ./.github/workflows/CredChain-contracts-ci.yaml
+
+  CredChain-contracts-release:
+    name: Run CredChain-contracts release
+    secrets: inherit
+    uses: ./.github/workflows/CredChain-contracts-cd.yaml
+    needs: CredChain-contracts-validate
+
+  CredChain-frontend-validate:
+    name: Run CredChain-frontend release
+    secrets: inherit
+    uses: ./.github/workflows/CredChain-frontend-ci.yaml
+
+  CredChain-frontend-release:
+    name: Run CredChain-frontend release
+    secrets: inherit
+    uses: ./.github/workflows/CredChain-frontend-cd.yaml
+    needs: CredChain-frontend-validate
