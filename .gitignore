@@ -6,8 +6,6 @@ __pycache__/
 # C extensions
 *.so
 
-#imgs
-imgs
 
 # Distribution / packaging
 .Python
