@@ -1,17 +1,36 @@
 /* eslint-disable no-console */
-import { useState } from 'react'
-import { Eye, EyeOff, LogIn } from 'lucide-react'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { User } from '../interfaces/User';
+import { Eye, EyeOff, LogIn } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate();
+
 
   const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('Logging in:', email, password)
-    // TODO: API integration
-  }
+    e.preventDefault();
+    console.log("Logging in:", email, password);
+  
+    const users: User[] = JSON.parse(localStorage.getItem("cred_users") || "[]");
+
+    const user = users.find((u: User) => u.email === email && u.password === password);
+  
+    if (!user) {
+      alert("Invalid credentials. Please try again.");
+      return;
+    }
+  
+    localStorage.setItem(
+      "cred_user",
+      JSON.stringify({ ...user, token: "fake-jwt-token-123" })
+    );
+  
+    navigate("/dashboard");
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -32,7 +51,7 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-lg border border-gray-300 p-3 text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Email"
+              placeholder="Enter email"
               required
             />
           </div>
@@ -76,12 +95,19 @@ export default function Login() {
           
           <div className="text-center text-sm text-gray-500">
             Don't have an account?{' '}
-            <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+            <a href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
               Sign up
             </a>
           </div>
         </form>
       </div>
+
+      {/* Footer */}
+      {/* <footer className="bg-gray-900 py-6 mt-auto">
+        <div className="max-w-7xl mx-auto px-6 text-center text-gray-400 text-sm">
+          © 2025 CredChain. All rights reserved.
+        </div>
+      </footer> */}
     </div>
   )
 }

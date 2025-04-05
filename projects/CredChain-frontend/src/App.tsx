@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import Home from './components/Home';
 import './styles/main.css';
 import Login from './components/Login';
@@ -13,7 +13,13 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+        path="/dashboard"
+        element={
+          localStorage.getItem("cred_user")
+            ? <Dashboard />
+            : <Navigate to="/login" />
+        } />
       </Routes>
     </Router>
   );
