@@ -2,5 +2,6 @@
   // Disabled due to matangover.mypy extension not supporting monorepos
   // To be addressed as part of https://github.com/matangover/mypy-vscode/issues/82
   "mypy.enabled": false,
-  "postman.settings.dotenv-detection-notification-visibility": false
+  "postman.settings.dotenv-detection-notification-visibility": false,
+  "stylelint.validate": ["css", "scss", "sass", "less", "postcss"]
 }
