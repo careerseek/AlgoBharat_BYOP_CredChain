@@ -2,24 +2,23 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { createHandler } from 'graphql-http/lib/use/express';
+import { authSchema } from './auth-service/authSchema';
 import { buildSchema } from 'graphql';
+import { authResolvers } from './auth-service/authService';
+
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
-const schema = buildSchema(`
-  type Query {
-    hello: String
-  }
-`);
+
+app.all('/graphql', createHandler({ schema: authSchema, rootValue: authResolvers }));
 
 const root = {
   hello: () => 'Hello, CredChain GraphQL API!'
 };
-
-app.all('/graphql', createHandler({ schema, rootValue: root }));
 
 app.get('/', (_req, res) => {
   res.send('Welcome to CredChain Backend API!');
