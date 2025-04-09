@@ -1,17 +1,11 @@
 /* stylelint-disable */
 /* eslint-disable prettier/prettier */
 import { generateToken } from '../utils/generateToken'
+import { User, IUser } from '../models/userModel'
+import mongoose from 'mongoose'
 
-interface User {
-  id: string
-  name: string
-  email: string
-  password: string
-}
 
-const users: User[] = []
-
-export const signup = ({
+export const signup = async ({
   name,
   email,
   password,
@@ -20,31 +14,38 @@ export const signup = ({
   email: string
   password: string
 }) => {
-  const existing = users.find((u) => u.email === email)
+  const existing = await User.findOne({ email })
   if (existing) throw new Error('User already exists')
 
-  const newUser: User = {
-    id: Date.now().toString(),
-    name,
-    email,
-    password,
-  }
+  const newUser = (await User.create({ name, email, password })) as IUser;
+  const token = generateToken(newUser._id.toString())
 
-  users.push(newUser)
-  const token = generateToken(newUser.id)
-  return { ...newUser, token }
+  return {
+    id: newUser._id,
+    name: newUser.name,
+    email: newUser.email,
+    // walletAddress: newUser.walletAddress,
+    token,
+  }
 }
 
-export const login = ({
+export const login = async ({
   email,
   password,
 }: {
   email: string
   password: string
 }) => {
-  const user = users.find((u) => u.email === email && u.password === password)
+  const user = await User.findOne({ email, password }) // Plaintext for now, bcrypt later
   if (!user) throw new Error('Invalid credentials')
 
-  const token = generateToken(user.id)
-  return { ...user, token }
+  const token = generateToken(user._id.toString())
+
+  return {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    // walletAddress: user.walletAddress,
+    token,
+  }
 }

@@ -1,20 +1,19 @@
 import { buildSchema } from 'graphql';
 
-
 export const authSchema = buildSchema(`
   type User {
     id: ID!
     name: String!
-    aadhaarNumber: String!
-    token: String
+    email: String!
+    token: String!
   }
 
   type Query {
-    login(aadhaarNumber: String!, otp: String!): User
-    verifyToken(token: String!): User
+    hello: String
   }
 
   type Mutation {
-    requestOtp(aadhaarNumber: String!): String
+    signup(name: String!, email: String!, password: String!): User
+    login(email: String!, password: String!): User
   }
 `);
