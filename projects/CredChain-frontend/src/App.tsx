@@ -1,26 +1,34 @@
-/* eslint-disable prettier/prettier */
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './components/Home';
-import './styles/main.css';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Dashboard from './components/Dashboard';
+import { AuthProvider, useAuth } from './context/AuthContext';
+
+function AppRoutes() {
+  const { user, loading } = useAuth();
+
+  if (loading) return null; // Or a spinner
+
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route
+        path="/dashboard"
+        element={user ? <Dashboard /> : <Navigate to="/login" />}
+      />
+    </Routes>
+  );
+}
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route
-        path="/dashboard"
-        element={
-          localStorage.getItem("cred_user")
-            ? <Dashboard />
-            : <Navigate to="/login" />
-        } />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppRoutes />
+      </Router>
+    </AuthProvider>
   );
 }

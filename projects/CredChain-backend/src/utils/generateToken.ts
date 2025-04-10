@@ -1,10 +1,13 @@
 /* eslint-disable prettier/prettier */
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-const secret = process.env.JWT_SECRET || 'credchain-default-secret';
+dotenv.config(); // ✅ Make sure this is at the top
+
+const secret = process.env.JWT_SECRET || 'default-fallback-secret';
 
 export const generateToken = (userId: string): string => {
-  return jwt.sign({ userId }, secret, { expiresIn: '7d' });
+  return jwt.sign({ userId }, secret, { expiresIn: '30d' }); // ✅ add expiry here
 };
 
 export const verifyToken = (token: string): { userId: string } | null => {
