@@ -2,7 +2,7 @@
 /* eslint-disable prettier/prettier */
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { User } from '../interfaces/User';
+// import { User } from '../interfaces/User';
 import { Eye, EyeOff, UserPlus } from 'lucide-react'
 
 export default function Signup() {
@@ -35,11 +35,24 @@ export default function Signup() {
       });
   
       const resData = await response.json();
-      console.log("GraphQL Response:", resData);
       const user = resData.data?.signup;
-  
+      
+      console.log("GraphQL Response:", resData);
+
       if (!user) {
-        alert("Signup failed!");
+        const errorMessage = resData.errors?.[0]?.message;
+      
+        try {
+          const parsed = JSON.parse(errorMessage); // Try to parse it as JSON
+          if (Array.isArray(parsed)) {
+            alert(parsed.map((err) => err.message).join("\n"));
+          } else {
+            alert(parsed.message || "Signup failed!");
+          }
+        } catch {
+          alert(errorMessage || "Signup failed!");
+        }
+    
         return;
       }
   

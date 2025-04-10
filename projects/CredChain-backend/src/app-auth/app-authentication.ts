@@ -4,7 +4,7 @@ import { generateToken } from '../utils/generateToken'
 import { User, IUser } from '../models/userModel'
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt';
-
+import { signupSchema, loginSchema } from '../validation/userSchema';
 
 export const signup = async ({
   name,
@@ -15,6 +15,9 @@ export const signup = async ({
   email: string
   password: string
 }) => {
+  // ✅ Validate inputs
+  signupSchema.parse({ name, email, password });
+  
   const user = await User.findOne({ email });
 
   if (user) throw new Error("User already exists");
@@ -41,6 +44,9 @@ export const login = async ({
   email: string
   password: string
 }) => {
+  // ✅ Validate inputs
+  loginSchema.parse({ email, password });
+
   const user = await User.findOne({ email });
 
   if (!user) throw new Error('Invalid credentials');
