@@ -13,33 +13,43 @@ export default function Signup() {
   const navigate = useNavigate();
 
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Signing up:', name, email, password);
   
-    const users: User[] = JSON.parse(localStorage.getItem("cred_users") || "[]");
-
-    if (users.some((u: User) => u.email === email)) {
-      alert("User already exists!");
-      return;
+    try {
+      const response = await fetch("http://localhost:4000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: `
+            mutation {
+              signup(name: "${name}", email: "${email}", password: "${password}") {
+                id
+                name
+                email
+                token
+              }
+            }
+          `,
+        }),
+      });
+  
+      const resData = await response.json();
+      console.log("GraphQL Response:", resData);
+      const user = resData.data?.signup;
+  
+      if (!user) {
+        alert("Signup failed!");
+        return;
+      }
+  
+      localStorage.setItem("cred_user", JSON.stringify(user));
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Signup error:", err);
+      alert("Signup failed. Check console.");
     }
-  
-    const newUser = {
-      id: Date.now().toString(),
-      name,
-      email,
-      password,
-    };
-  
-    users.push(newUser);
-    localStorage.setItem("cred_users", JSON.stringify(users));
-    localStorage.setItem("cred_user", JSON.stringify({
-      ...newUser,
-      token: "fake-jwt-token-456"
-    }));
-  
-    navigate("/dashboard");
-  };  
+  }; 
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">

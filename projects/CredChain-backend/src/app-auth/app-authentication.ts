@@ -14,10 +14,13 @@ export const signup = async ({
   email: string
   password: string
 }) => {
-  const existing = await User.findOne({ email })
-  if (existing) throw new Error('User already exists')
+  const user = await User.findOne({ email });
+
+  if (user) throw new Error("User already exists");
+  
 
   const newUser = (await User.create({ name, email, password })) as IUser;
+  console.log('New user created:', newUser);
   const token = generateToken(newUser._id.toString())
 
   return {
@@ -36,16 +39,20 @@ export const login = async ({
   email: string
   password: string
 }) => {
-  const user = await User.findOne({ email, password }) // Plaintext for now, bcrypt later
-  if (!user) throw new Error('Invalid credentials')
+  const user = await User.findOne({ email });
 
-  const token = generateToken(user._id.toString())
+  if (!user) throw new Error('Invalid credentials');
+
+  if (user.password !== password) {
+    throw new Error('Invalid credentials');
+  }
+
+  const token = generateToken(user._id.toString());
 
   return {
     id: user._id,
     name: user.name,
     email: user.email,
-    // walletAddress: user.walletAddress,
     token,
-  }
-}
+  };
+};

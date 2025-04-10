@@ -1,36 +1,74 @@
 /* eslint-disable no-console */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User } from '../interfaces/User';
+// import { User } from '../interfaces/User';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate();
+  const { login } = useAuth();
 
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Logging in:", email, password);
   
-    const users: User[] = JSON.parse(localStorage.getItem("cred_users") || "[]");
-
-    const user = users.find((u: User) => u.email === email && u.password === password);
+    try {
+      const response = await fetch("http://localhost:4000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: `
+            mutation {
+              login(email: "${email}", password: "${password}") {
+                id
+                name
+                email
+                token
+              }
+            }
+          `,
+        }),
+      });
   
-    if (!user) {
-      alert("Invalid credentials. Please try again.");
-      return;
+      const resData = await response.json();
+      console.log("GraphQL Response:", resData);
+      const user = resData.data?.login;
+  
+      if (!user) {
+        alert("Invalid credentials. Please try again.");
+        return;
+      }
+  
+      login(user); // from AuthContext
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Login failed. Check console.");
     }
-  
-    localStorage.setItem(
-      "cred_user",
-      JSON.stringify({ ...user, token: "fake-jwt-token-123" })
-    );
-  
-    navigate("/dashboard");
   };
+
+
+  // const handleLogin = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   console.log("Logging in:", email, password);
+  
+  //   const users: User[] = JSON.parse(localStorage.getItem("cred_users") || "[]");
+
+  //   const user = users.find((u: User) => u.email === email && u.password === password);
+  
+
+  
+  //   localStorage.setItem(
+  //     "cred_user",
+  //     JSON.stringify({ ...user, token: "fake-jwt-token-123" })
+  //   );
+  
+  //   window.location.href = "/dashboard";
+  // };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
