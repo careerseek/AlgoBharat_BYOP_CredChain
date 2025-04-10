@@ -3,6 +3,7 @@
 import { generateToken } from '../utils/generateToken'
 import { User, IUser } from '../models/userModel'
 import mongoose from 'mongoose'
+import bcrypt from 'bcrypt';
 
 
 export const signup = async ({
@@ -19,7 +20,8 @@ export const signup = async ({
   if (user) throw new Error("User already exists");
   
 
-  const newUser = (await User.create({ name, email, password })) as IUser;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const newUser = (await User.create({ name, email, password: hashedPassword })) as IUser;
   console.log('New user created:', newUser);
   const token = generateToken(newUser._id.toString())
 
@@ -43,9 +45,8 @@ export const login = async ({
 
   if (!user) throw new Error('Invalid credentials');
 
-  if (user.password !== password) {
-    throw new Error('Invalid credentials');
-  }
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) throw new Error('Invalid credentials');
 
   const token = generateToken(user._id.toString());
 
