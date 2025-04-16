@@ -6,14 +6,19 @@ export const authSchema = buildSchema(`
     name: String!
     email: String!
     token: String!
+    digilockerLinked: Boolean!
+    digilockerLinkedAt: String!
   }
 
   type Query {
     hello: String
+    getUser(id: ID!): User
   }
 
   type Mutation {
     signup(name: String!, email: String!, password: String!): User
     login(email: String!, password: String!): User
+    linkDigilocker(userId: ID!): User
+    unlinkDigilocker(userId: ID!): User
   }
 `);

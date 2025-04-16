@@ -4,6 +4,8 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import Dashboard from './components/Dashboard';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import DigilockerAuth from './components/DigilockerAuth';
+
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -18,6 +20,10 @@ function AppRoutes() {
       <Route
         path="/dashboard"
         element={user ? <Dashboard /> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/digilocker/auth"
+        element={user ? <DigilockerAuth /> : <Navigate to="/login" />}
       />
     </Routes>
   );
