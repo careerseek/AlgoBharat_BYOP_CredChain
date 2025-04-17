@@ -7,6 +7,8 @@
   },
   "dependencies": {
     "dotenv": "^16.4.7",
-    "mongoose": "^8.13.2"
+    "graphql-type-json": "^0.3.2",
+    "mongoose": "^8.13.2",
+    "zod": "^3.24.2"
   }
 }
