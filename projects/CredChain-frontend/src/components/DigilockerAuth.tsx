@@ -31,7 +31,7 @@ export default function DigilockerAuth() {
         }),
       });
 
-      navigate('/dashboard');
+      navigate('/get/digilocker');
     };
 
     simulateOAuth();

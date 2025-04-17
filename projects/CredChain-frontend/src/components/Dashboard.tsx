@@ -2,130 +2,65 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
-  const [user, setUser] = useState<{ id: string; name: string; digilockerLinkedAt?: string | null;} | null>(null);
-  const [digilockerLinked, setDigilockerLinked] = useState(false);
+  const [user, setUser] = useState<{ id: string; name: string } | null>(null);
   const navigate = useNavigate();
-
-  // Fetch updated user data from backend
-  const fetchUserStatus = async (userId: string) => {
-    const response = await fetch('http://localhost:4000/graphql', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query: `
-          query {
-            getUser(id: "${userId}") {
-              id
-              name
-              digilockerLinked
-              digilockerLinkedAt
-            }
-          }
-        `,
-      }),
-    });
-
-    const result = await response.json();
-    const updatedUser = result.data?.getUser;
-    if (updatedUser) {
-      setDigilockerLinked(updatedUser.digilockerLinked);
-      setUser({
-        id: updatedUser.id,
-        name: updatedUser.name,
-        digilockerLinkedAt: updatedUser.digilockerLinkedAt,
-      });
-    }
-  };
 
   useEffect(() => {
     const userData = localStorage.getItem("cred_user");
     if (userData) {
       const parsed = JSON.parse(userData);
       setUser(parsed);
-      fetchUserStatus(parsed.id);
     }
   }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("cred_user");
-    navigate("/login");
-  };
-
-
-  const handleDisconnect = async () => {
-    if (!user) return;
-    await fetch("http://localhost:4000/graphql", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        query: `
-          mutation {
-            unlinkDigilocker(userId: "${user.id}") {
-              id
-              digilockerLinked
-            }
-          }
-        `,
-      }),
-    });
-    setDigilockerLinked(false);
-  };
 
   if (!user) {
     return <p className="text-center p-8 text-gray-500">Loading user dashboard...</p>;
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">👋 Welcome, {user.name}</h1>
-        <div className="flex flex-col items-end space-y-2 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0">
-          {digilockerLinked ? (
-            <button
-              onClick={handleDisconnect}
-              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition"
-            >
-              Disconnect DigiLocker
-            </button>
-          ) : (
-
-            <button
-              onClick={() => navigate('/digilocker/auth')}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
-            >
-              Connect DigiLocker
-            </button>
-            
-          )}
-          {digilockerLinked && user.digilockerLinkedAt && (
-            <p className="text-sm text-gray-600 mt-1">
-              📅 DigiLocker linked on:{" "}
-              <span className="font-medium">
-                {new Date(user.digilockerLinkedAt).toLocaleString()}
-              </span>
-            </p>
-          )}
-          <button
-            onClick={handleLogout}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
-          >
-            Logout
-          </button>
+    <div className="p-8 max-w-7xl mx-auto">
+      {/* Hero Banner */}
+      <div className="flex items-center justify-between bg-blue-50 rounded-xl p-8 mb-10 shadow-md">
+        <div>
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">👋 Welcome, {user.name}</h1>
+          <p className="text-gray-700 max-w-xl">
+            CredChain is your trusted platform to upload, verify, and share your personal and institutional documents.
+            Start by uploading your documents, fetching from DigiLocker, or requesting verification from an institute.
+          </p>
         </div>
+        <img
+          src="/imgs/hero-docs.png"
+          alt="CredChain Docs"
+          className="w-48 h-48 object-contain hidden sm:block"
+        />
       </div>
 
-      <p className="text-lg text-gray-600 mb-6">
-        Here's your verified credential dashboard.
-      </p>
+      {/* Get Your Documents Section */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-800">📥 Get Your Documents</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div onClick={() => navigate('/get/self')} className="bg-white rounded-lg p-6 shadow hover:shadow-lg cursor-pointer">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">📤 Self Upload</h3>
+            <p className="text-sm text-gray-600">Upload documents directly from your system. Fill in key details and submit for verification.</p>
+          </div>
+          <div onClick={() => navigate('/get/digilocker')} className="bg-white rounded-lg p-6 shadow hover:shadow-lg cursor-pointer">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">🔗 DigiLocker Import</h3>
+            <p className="text-sm text-gray-600">Fetch verified government-issued documents via DigiLocker integration.</p>
+          </div>
+          <div onClick={() => navigate('/get/institute')} className="bg-white rounded-lg p-6 shadow hover:shadow-lg cursor-pointer">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">🏛️ From Institutes</h3>
+            <p className="text-sm text-gray-600">Request documents from educational or organizational bodies and track their status.</p>
+          </div>
+        </div>
+      </section>
 
-      <div className="bg-white rounded-lg shadow-md p-6 space-y-4">
-        <h2 className="text-xl font-semibold text-gray-700">Your Credentials (Sample)</h2>
-        <ul className="list-disc list-inside text-gray-600">
-          <li>🎓 B.Tech - Computer Science, XYZ University (Verified)</li>
-          <li>💼 Software Engineer at ABC Corp (Verified)</li>
-          <li>📜 Blockchain Certificate - Algorand Foundation (Pending)</li>
-        </ul>
-      </div>
+      {/* Recent Documents */}
+      <section>
+        <h2 className="text-2xl font-semibold mb-4 text-gray-800">🕑 Recent Documents</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="bg-white p-4 rounded shadow text-gray-600">No recent documents to show.</div>
+        </div>
+      </section>
     </div>
   );
 }
