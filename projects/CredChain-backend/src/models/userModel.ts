@@ -11,6 +11,7 @@ export interface IUser extends Document {
   // walletAddress?: string
   digilockerLinked: boolean 
   digilockerLinkedAt?: Date | null;
+  lastDigilockerSyncedAt?: Date;
   createdAt?: Date
   // updatedAt?: Date
 }
@@ -44,6 +45,10 @@ const UserSchema: Schema<IUser> = new Schema(
       default: false,
     },
     digilockerLinkedAt: {
+      type: Date,
+      default: null,
+    },
+    lastDigilockerSyncedAt: {
       type: Date,
       default: null,
     },
