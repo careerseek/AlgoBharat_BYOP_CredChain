@@ -20,7 +20,7 @@ export const authResolvers = {
     if (!user) throw new Error("User not found");
 
     user.digilockerLinked = true;
-    user.digilockerLinkedAt = new Date(); // 🕒 Save the timestamp
+    user.digilockerLinkedAt = new Date();
     await user.save();
 
     return {
@@ -39,7 +39,7 @@ export const authResolvers = {
     if (!user) throw new Error("User not found");
 
     user.digilockerLinked = false;
-    user.digilockerLinkedAt = null; // 🧹 Clear timestamp
+    user.digilockerLinkedAt = null;
     await user.save();
 
     return {
@@ -64,8 +64,13 @@ export const authResolvers = {
       digilockerLinked: user.digilockerLinked,
       digilockerLinkedAt: user.digilockerLinkedAt
         ? (user.digilockerLinkedAt as Date).toISOString()
-        : null
+        : null,
+      lastDigilockerSyncedAt: user.lastDigilockerSyncedAt?.toISOString() || null,
     };
+  },
+
+  getUserDocuments: async ({ userId }: { userId: string }) => {
+    return await UserDocument.find({ userId });
   },
 
   syncMockDocuments: async ({ userId }: { userId: string }) => {
@@ -96,8 +101,28 @@ export const authResolvers = {
         verified: false,
       },
     ];
-
-    const savedDocs = await UserDocument.insertMany(mockDocs);
-    return savedDocs;
+  
+    const savedDocs: any[] = [];
+  
+    for (const doc of mockDocs) {
+      const exists = await UserDocument.findOne({ userId, docId: doc.docId });
+  
+      if (!exists) {
+        const created = await UserDocument.create(doc);
+        savedDocs.push(created);
+      }
+    }
+  
+    // Update user with latest sync timestamp
+    const user = await User.findById(userId);
+    if (user) {
+      user.lastDigilockerSyncedAt = new Date();
+      await user.save();
+    }
+  
+    return {
+      documents: savedDocs,
+      lastSyncedAt: user?.lastDigilockerSyncedAt?.toISOString() || null,
+    };
   },
 };

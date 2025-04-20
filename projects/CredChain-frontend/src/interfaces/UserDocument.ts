@@ -13,4 +13,4 @@ export interface UserDocument {
     hash?: string;
     ipfsUrl?: string;
     verified: boolean;
-  }
+}

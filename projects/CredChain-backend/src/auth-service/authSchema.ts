@@ -10,6 +10,7 @@ export const authSchema = buildSchema(`
     token: String!
     digilockerLinked: Boolean!
     digilockerLinkedAt: String!
+    lastDigilockerSyncedAt: String
   }
   
 
@@ -33,14 +34,18 @@ export const authSchema = buildSchema(`
   type Query {
     hello: String
     getUser(id: ID!): User
-    getUserDocuments(userId: ID!): [UserDocument]
+    getUserDocuments(userId: ID!): [UserDocument] 
+  }
+  
+  type SyncDocumentsResult {
+    documents: [UserDocument]
+    lastSyncedAt: String
   }
 
   type Mutation {
     signup(name: String!, email: String!, password: String!): User
     login(email: String!, password: String!): User
     linkDigilocker(userId: ID!): User
-    unlinkDigilocker(userId: ID!): User
-    syncMockDocuments(userId: ID!): [UserDocument]
+    syncMockDocuments(userId: ID!): SyncDocumentsResult
   }
 `);
