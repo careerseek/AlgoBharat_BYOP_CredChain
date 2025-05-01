@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSmartContract } from '../hooks/useSmartContract'
 
 export default function Dashboard() {
   const [user, setUser] = useState<{ id: string; name: string } | null>(null);
   const navigate = useNavigate();
+  const { sayHello } = useSmartContract()
 
   useEffect(() => {
     const userData = localStorage.getItem("cred_user");
@@ -19,6 +21,15 @@ export default function Dashboard() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
+      
+      <h1 className="text-2xl font-bold mb-4">Welcome to CredChain</h1>
+      <button
+        onClick={() => sayHello('CredChain')}
+        className="bg-indigo-600 text-white px-4 py-2 rounded"
+      >
+        Call Hello Smart Contract
+      </button>
+      
       {/* Hero Banner */}
       <div className="flex items-center justify-between bg-blue-50 rounded-xl p-8 mb-10 shadow-md">
         <div>
