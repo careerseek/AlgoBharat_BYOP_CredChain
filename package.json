@@ -6,6 +6,7 @@
     "tailwindcss": "^4.1.1"
   },
   "dependencies": {
+    "@algorandfoundation/algokit-utils": "^9.0.1",
     "dotenv": "^16.4.7",
     "graphql-type-json": "^0.3.2",
     "mongoose": "^8.13.2",
