@@ -12,7 +12,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@algorandfoundation/algokit-utils": "^9.0.1",
+    "@types/axios": "^0.9.36",
+    "@types/multer": "^1.4.12",
+    "algosdk": "^3.2.0",
+    "axios": "^1.9.0",
     "bcrypt": "^5.1.1",
+    "Buffer": "^0.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
@@ -20,7 +26,11 @@
     "graphql-http": "^1.22.4",
     "graphql-type-json": "^0.3.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.13.2"
+    "keccak256": "^1.0.6",
+    "merkletreejs": "^0.5.2",
+    "mongoose": "^8.13.2",
+    "multer": "^1.4.5-lts.2",
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
