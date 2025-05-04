@@ -33,7 +33,7 @@ export default function Dashboard() {
           </p>
         </div>
         <img
-          src="/imgs/hero-docs.png"
+          src="../../imgs/Credchain.png"
           alt="CredChain Docs"
           className="w-48 h-48 object-contain hidden sm:block"
         />

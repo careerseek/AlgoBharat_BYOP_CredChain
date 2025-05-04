@@ -14,6 +14,16 @@
 
 CredChain is an innovative blockchain-based solution revolutionizing employment and academic credential verification. Leveraging Algorand’s high-performance blockchain technology, Aadhaar-based identity verification, and DigiLocker integration, CredChain ensures secure, fast, and trustworthy verification of credentials.
 
+### CredChain Homepage
+<div align="center">
+  <img src="imgs/credchain_homepage.png" alt="CredChain Logo" width="250"/>
+</div>
+
+### CredChain Dashboard
+<div align="center">
+  <img src="imgs/credchain_dashboard.png" alt="CredChain Logo" width="250"/>
+</div>
+
 ---
 
 ## Why CredChain?
