@@ -1,57 +1,62 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import jwt from 'jsonwebtoken';
-import { createHandler } from 'graphql-http/lib/use/express';
-import { authSchema } from './auth-service/authSchema';
-import { authResolvers } from './auth-service/authService';
+import express from 'express'
+import dotenv from 'dotenv'
+import cors from 'cors'
+import jwt from 'jsonwebtoken'
+import { createHandler } from 'graphql-http/lib/use/express'
+import { authSchema } from './auth-service/authSchema'
+import { authResolvers } from './auth-service/authService'
 import { connectDB } from './db/mongoose'
 
+import selfRouter      from './routes/documents'
+import digiRouter      from './routes/digilocker'
+import thirdPartyRouter from './routes/thirdparty'
+import verifyRouter    from './routes/verify'
 
-dotenv.config();
+dotenv.config()
 
-const app = express();
-app.use(cors()); 
-app.use(express.json());
+const app = express()
+app.use(cors())
+app.use(express.json())
 
-connectDB();
+connectDB()
 
-// GraphQL endpoint
-app.all('/graphql', createHandler({
-  schema: authSchema,
-  rootValue: authResolvers,
-  context: async (req) => {
-    const headers = req.headers as any;
-    const authHeader = headers['authorization'] || headers['Authorization'];
-    let user = null;
+// REST endpoints
+app.use('/documents/self',       selfRouter)
+app.use('/documents/digilocker', digiRouter)
+app.use('/documents/thirdparty', thirdPartyRouter)
+app.use('/documents/verify',     verifyRouter)
 
-    if (authHeader?.startsWith("Bearer ")) {
-      const token = authHeader.split(" ")[1];
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
-        user = { id: decoded.id };
-      } catch (err) {
-        console.warn("JWT verification failed:", err);
+// GraphQL
+app.all(
+  '/graphql',
+  createHandler({
+    schema: authSchema,
+    rootValue: authResolvers,
+    context: async (req) => {
+      const headers = req.headers as any
+      const token = headers.authorization?.split(' ')[1]
+      let user = null
+      if (token) {
+        try {
+          const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string }
+          user = { id: decoded.id }
+        } catch (err) {
+          console.warn('JWT verification failed:', err)
+        }
       }
-    }
+      return { user }
+    },
+  })
+)
 
-    return { user };
-  }
-}));
-
-const root = {
-  hello: () => 'Hello, CredChain GraphQL API!'
-};
-
+// Health‐check
 app.get('/', (_req, res) => {
-  res.send('Welcome to CredChain Backend API!');
-});
+  res.send('Welcome to CredChain Backend API!')
+})
 
-const PORT = process.env.PORT || 4000;
-
+const PORT = process.env.PORT || 4000
 app.listen(PORT, () => {
-  console.log(`🚀 CredChain Backend running at http://localhost:${PORT}`);
-});
+  console.log(`🚀 CredChain Backend running at http://localhost:${PORT}`)
+})
 
-export default app;
-// This is the main entry point for the CredChain backend application.
+export default app
