@@ -1,10 +1,9 @@
 // src/components/Layout.tsx
 import { Link, useNavigate } from 'react-router-dom';
-import { useWallet } from '../hooks/useWallet'
+import WalletDemo from './WalletDemo'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()
-  const { account, connect, disconnect } = useWallet()
 
   return (
     <div className="flex min-h-screen">
@@ -31,24 +30,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Main content with Wallet header */}
       <div className="flex-1 bg-gray-100">
         <div className="flex justify-end p-4 border-b bg-white">
-          {account ? (
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-800 font-mono">{account.slice(0, 6)}...{account.slice(-4)}</span>
-              <button
-                onClick={disconnect}
-                className="text-sm text-red-500 hover:underline"
-              >
-                Disconnect
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={connect}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded"
-            >
-              Connect Wallet
-            </button>
-          )}
+          {/* Swap out manual buttons for your demo component */}
+          <WalletDemo />
         </div>
 
         <main className="flex-1 bg-gray-100 p-8">{children}</main>
