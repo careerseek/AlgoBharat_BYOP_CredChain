@@ -61,17 +61,12 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     const { root, leafMap } = buildMerkleTree(data)
     const rootHex = root.toString('hex')
 
-    // ✨ turn each sibling‐buffer list into an array of hex‐strings ✨
-    const proofsHex: Record<string,string[]> = {}
-    for (const [field, siblings] of Object.entries(leafMap)) {
-    // siblings is Uint8Array[] (or Buffer[])
-    proofsHex[field] = Array.isArray(siblings) ? siblings.map((sib) => {
-        if (Buffer.isBuffer(sib)) {
-            return sib.toString('hex');
-        }
-        return Buffer.from(sib as unknown as Uint8Array).toString('hex');
-    }) : [];
-    }
+      // 2️⃣ Turn each leaf‐hash Buffer into a hex‐string (wrapped in a 1-element array)
+      const proofs: Record<string, string[]> = {}
+      const leafMapBuffers = leafMap as Record<string, Buffer>
+      for (const [field, buf] of Object.entries(leafMapBuffers)) {
+      proofs[field] = [ buf.toString('hex') ]
+      }
 
 
     // 5️⃣ Sign the root
@@ -99,8 +94,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     res.status(201).json({
       document:        doc,
       proofsAvailable: Object.keys(data),
-      proofs: leafMap,
-      proofsHex,
+      proofs,
     })
   } catch (err: any) {
     console.error('POST /documents/thirdparty error', err)
